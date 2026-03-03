@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Register</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px;">
+        <div class="header">
+            <h1><i class="fas fa-film"></i> AfriTrailer</h1>
+            <p>Create account</p>
+        </div>
+        <div class="card">
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <div style="display: flex;">
+                        <span style="background: #f0f0f0; padding: 15px; border-radius: var(--radius) 0 0 var(--radius); border: 2px solid #ddd; border-right: none;">+256</span>
+                        <input type="tel" id="phone" placeholder="701234567" style="flex:1; border-radius: 0 var(--radius) var(--radius) 0;" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirm">Confirm Password</label>
+                    <input type="password" id="confirm" placeholder="••••••••" required>
+                </div>
+                <div class="input-group">
+                    <label for="referral">Referral Code (optional)</label>
+                    <input type="text" id="referral" placeholder="AFRITRAILER-XXXXXX">
+                </div>
+                <button type="submit" class="btn" style="width:100%;">Register</button>
+            </form>
+            <p style="text-align:center; margin-top:20px;">Already have an account? <a href="index.html">Login</a></p>
+        </div>
+    </div>
+    <script type="module">
+        import { register } from './auth.js'
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const phone = '+256' + document.getElementById('phone').value.replace(/\D/g,'')
+            const password = document.getElementById('password').value
+            const confirm = document.getElementById('confirm').value
+            const referral = document.getElementById('referral').value.trim() || null
+            if (password !== confirm) {
+                alert('Passwords do not match')
+                return
+            }
+            try {
+                await register(phone, password, referral)
+                alert('Registration successful! Please login.')
+                window.location.href = 'index.html'
+            } catch (err) {
+                alert('Registration failed: ' + err.message)
+            }
+        })
+    </script>
+</body>
+</html>
