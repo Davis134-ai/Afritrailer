@@ -245,7 +245,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            padding: 0 20px 100px;
+            padding: 0 20px 20px;
         }
         .feature-card {
             background: white;
@@ -334,6 +334,87 @@
             font-weight: bold;
             font-size: 0.88rem;
             text-decoration: none;
+        }
+
+        /* Activity Ticker */
+        .activity-section {
+            margin-bottom: 20px;
+        }
+        .activity-ticker-wrapper {
+            overflow: hidden;
+            width: 100%;
+            padding: 10px 0;
+            background: #fff;
+        }
+        .activity-ticker {
+            display: flex;
+            gap: 12px;
+            animation: scrollRight 30s linear infinite;
+            width: max-content;
+        }
+        @keyframes scrollRight {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+        .activity-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: var(--col-offset, 0px);
+        }
+        .activity-card {
+            background: white;
+            border-radius: 10px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 3px solid var(--primary-orange);
+            min-width: 220px;
+            font-size: 0.82rem;
+        }
+        .activity-card .phone {
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+        .activity-card .action {
+            color: var(--text-light);
+        }
+        .activity-card .action span {
+            font-weight: bold;
+        }
+        .activity-card.recharge .action span { color: #4CAF50; }
+        .activity-card.withdraw .action span { color: #f44336; }
+        .activity-card.upgrade .action span { color: var(--primary-orange); }
+
+        /* Studios Section */
+        .studios-section {
+            margin-bottom: 100px;
+        }
+        .studios-carousel-wrapper {
+            overflow: hidden;
+            width: 100%;
+            padding: 10px 0;
+        }
+        .studios-carousel {
+            display: flex;
+            gap: 20px;
+            animation: studioScroll 20s linear infinite;
+            width: max-content;
+            align-items: center;
+        }
+        @keyframes studioScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .studios-carousel img {
+            height: 60px;
+            width: 60px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -506,6 +587,49 @@
                 <p>Earn 10% commission</p>
             </a>
         </div>
+
+        <!-- Activity Ticker Section -->
+        <div class="activity-section">
+            <div class="section-header" style="padding: 20px 20px 12px;">
+                <h3>🔴 Live Activity</h3>
+            </div>
+            <div class="activity-ticker-wrapper">
+                <div class="activity-ticker" id="activity-ticker"></div>
+            </div>
+        </div>
+
+        <!-- Partner Studios Section -->
+        <div class="studios-section">
+            <div class="section-header" style="padding: 20px 20px 12px;">
+                <h3>🎬 Our Partner Studios</h3>
+            </div>
+            <div class="studios-carousel-wrapper">
+                <div class="studios-carousel" id="studios-carousel">
+                    <img src="studio-img1.png" alt="Studio 1">
+                    <img src="studio-img2.png" alt="Studio 2">
+                    <img src="studio-img3.png" alt="Studio 3">
+                    <img src="studio-img4.png" alt="Studio 4">
+                    <img src="studio-img5.png" alt="Studio 5">
+                    <img src="studio-img6.png" alt="Studio 6">
+                    <img src="studio-img7.png" alt="Studio 7">
+                    <img src="studio-img8.png" alt="Studio 8">
+                    <img src="studio-img9.png" alt="Studio 9">
+                    <img src="studio-img10.png" alt="Studio 10">
+                    <!-- Duplicated for seamless loop -->
+                    <img src="studio-img1.png" alt="Studio 1">
+                    <img src="studio-img2.png" alt="Studio 2">
+                    <img src="studio-img3.png" alt="Studio 3">
+                    <img src="studio-img4.png" alt="Studio 4">
+                    <img src="studio-img5.png" alt="Studio 5">
+                    <img src="studio-img6.png" alt="Studio 6">
+                    <img src="studio-img7.png" alt="Studio 7">
+                    <img src="studio-img8.png" alt="Studio 8">
+                    <img src="studio-img9.png" alt="Studio 9">
+                    <img src="studio-img10.png" alt="Studio 10">
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <nav class="bottom-nav">
@@ -584,6 +708,74 @@
                 navigator.clipboard.writeText(link);
                 alert('Referral link copied: ' + link);
             });
+
+            // Generate activity ticker
+            generateActivityTicker();
+        }
+
+        function generateActivityTicker() {
+            const ticker = document.getElementById('activity-ticker');
+            const actions = ['recharge', 'withdraw', 'upgrade'];
+            const upgrades = ['A1', 'A2', 'A3', 'A4'];
+            const numColumns = 12;
+
+            const offsets = [0, 15, 5, 20, 10, 25, 0, 18, 8, 22, 3, 12];
+
+            function randomPhone() {
+                const mid = Math.floor(Math.random() * 9000000) + 1000000;
+                const last = Math.floor(Math.random() * 900) + 100;
+                return `+2567${String(mid).substring(0,1)}*******${last}`;
+            }
+
+            function randomAmount() {
+                const amount = (Math.floor(Math.random() * 821) + 30) * 1000;
+                return 'UGX ' + amount.toLocaleString();
+            }
+
+            function generateCard() {
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                const phone = randomPhone();
+                const card = document.createElement('div');
+                card.className = `activity-card ${action}`;
+
+                let actionText = '';
+                if (action === 'recharge') {
+                    actionText = `recharged <span>${randomAmount()}</span>`;
+                } else if (action === 'withdraw') {
+                    actionText = `withdrew <span>${randomAmount()}</span>`;
+                } else {
+                    const tier = upgrades[Math.floor(Math.random() * upgrades.length)];
+                    actionText = `upgraded to <span>${tier}</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="phone">${phone}</div>
+                    <div class="action">${actionText}</div>
+                `;
+                return card;
+            }
+
+            for (let c = 0; c < numColumns; c++) {
+                const col = document.createElement('div');
+                col.className = 'activity-column';
+                col.style.setProperty('--col-offset', offsets[c] + 'px');
+                col.style.marginTop = offsets[c] + 'px';
+                for (let r = 0; r < 4; r++) {
+                    col.appendChild(generateCard());
+                }
+                ticker.appendChild(col);
+            }
+
+            // Duplicate columns for seamless scroll
+            for (let c = 0; c < numColumns; c++) {
+                const col = document.createElement('div');
+                col.className = 'activity-column';
+                col.style.marginTop = offsets[c] + 'px';
+                for (let r = 0; r < 4; r++) {
+                    col.appendChild(generateCard());
+                }
+                ticker.appendChild(col);
+            }
         }
 
         loadHome();

@@ -13,7 +13,18 @@ export async function register(phone, password, referralCode = null) {
   const user = authData.user;
   if (!user) throw new Error('Registration failed')
 
-  // Create profile
+  // Look up referrer first if code provided
+  let referrerId = null;
+  if (referralCode) {
+    const { data: referrer } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .single();
+    if (referrer) referrerId = referrer.id;
+  }
+
+  // Create profile with referred_by included from the start
   const { error: profileError } = await supabase
     .from('profiles')
     .insert({
@@ -23,23 +34,9 @@ export async function register(phone, password, referralCode = null) {
       tier: 'free',
       daily_limit: 0,
       balance: 0,
-    })
-  if (profileError) throw profileError
-
-  // Handle referral if provided
-  if (referralCode) {
-    const { data: referrer } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('referral_code', referralCode)
-      .single()
-    if (referrer) {
-      await supabase
-        .from('profiles')
-        .update({ referred_by: referrer.id })
-        .eq('id', user.id)
-    }
-  }
+      referred_by: referrerId
+    });
+  if (profileError) throw profileError;
 
   return user
 }

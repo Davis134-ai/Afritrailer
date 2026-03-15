@@ -65,6 +65,12 @@
                 alert('Registration failed: ' + err.message)
             }
         })
+                // Auto-fill referral code from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            document.getElementById('referral').value = refCode;
+        }
     </script>
 </body>
 </html>
