@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Payments</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .payments-header {
+            background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+            color: white;
+            padding: 25px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .payments-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+        .wallet-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            border: 1px solid var(--primary-orange);
+        }
+        .wallet-card h3 {
+            color: var(--primary-orange);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        .wallet-card p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+        .wallet-input-group {
+            margin-bottom: 15px;
+        }
+        .wallet-input-group label {
+            display: block;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 6px;
+        }
+        .wallet-input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .wallet-input-group input:focus {
+            border-color: var(--primary-orange);
+        }
+        .wallet-input-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .wallet-input-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        .wallet-saved-badge {
+            display: none;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #4CAF50;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .save-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .payment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .payment-card-left .payment-type {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        .payment-card-left .payment-date {
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+        .payment-card-right {
+            text-align: right;
+        }
+        .payment-amount {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        .payment-amount.recharge { color: #4CAF50; }
+        .payment-amount.withdrawal { color: #f44336; }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .status-approved { background: #E8F5E9; color: #4CAF50; }
+        .status-pending { background: #FFF3E0; color: #FF9800; }
+        .status-failed { background: #FFEBEE; color: #f44336; }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="padding-bottom: 100px;">
+
+        <!-- Header -->
+        <div class="payments-header">
+            <h1><i class="fas fa-receipt"></i> Payment History</h1>
+            <p>Track all your transactions</p>
+        </div>
+
+        <!-- Connect Wallet -->
+        <div class="wallet-card">
+            <h3><i class="fas fa-wallet"></i> Wallet Information</h3>
+            <p>This information will be used to process your payments. It can only be set once.</p>
+
+            <div class="wallet-input-group">
+                <label>Mobile Money Number</label>
+                <input type="tel" id="wallet-phone" disabled placeholder="Loading...">
+            </div>
+
+            <div class="wallet-input-group">
+                <label>Registered Names</label>
+                <input type="text" id="wallet-names" placeholder="Enter names your number is registered under" maxlength="100">
+            </div>
+
+            <div class="wallet-saved-badge" id="wallet-saved-badge">
+                <i class="fas fa-check-circle"></i> Wallet information saved. Contact support to make changes.
+            </div>
+
+            <button class="save-btn" id="save-wallet-btn">
+                <i class="fas fa-save"></i> Save Wallet Information
+            </button>
+        </div>
+
+        <!-- Payment History -->
+        <div class="section-title">
+            <i class="fas fa-history" style="color: var(--primary-orange);"></i>
+            All Transactions
+        </div>
+
+        <div id="payments-container">
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-orange);"></i>
+                <p style="margin-top: 15px;">Loading transactions...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase.js';
+        import { getCurrentUser } from './auth.js';
+
+        let userId = null;
+
+        async function loadPage() {
+            const { data: { user } } = await getCurrentUser();
+            if (!user) { window.location.href = 'index.html'; return; }
+            userId = user.id;
+
+            // Load profile
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('phone, wallet_names')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                // Pre-fill phone (always disabled)
+                document.getElementById('wallet-phone').value = profile.phone;
+
+                if (profile.wallet_names) {
+                    // Already saved — lock everything
+                    document.getElementById('wallet-names').value = profile.wallet_names;
+                    document.getElementById('wallet-names').disabled = true;
+                    document.getElementById('save-wallet-btn').disabled = true;
+                    document.getElementById('save-wallet-btn').style.display = 'none';
+                    document.getElementById('wallet-saved-badge').style.display = 'block';
+                }
+            }
+
+            // Save wallet button
+            document.getElementById('save-wallet-btn').addEventListener('click', async () => {
+                const names = document.getElementById('wallet-names').value.trim();
+
+                if (!names || names.length < 5) {
+                    alert('Please enter your registered names (minimum 5 characters).');
+                    return;
+                }
+
+                // Only allow letters and spaces
+                if (!/^[a-zA-Z\s]+$/.test(names)) {
+                    alert('Names can only contain letters. No numbers or special characters allowed.');
+                    return;
+                }
+
+                const btn = document.getElementById('save-wallet-btn');
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ wallet_names: names })
+                    .eq('id', user.id);
+
+                if (error) {
+                    alert('Error saving wallet information: ' + error.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save"></i> Save Wallet Information';
+                    return;
+                }
+
+                // Lock fields after saving
+                document.getElementById('wallet-names').disabled = true;
+                btn.style.display = 'none';
+                document.getElementById('wallet-saved-badge').style.display = 'block';
+                alert('Wallet information saved successfully!');
+            });
+
+            // Load payment history
+            loadPayments(user.id);
+        }
+
+        async function loadPayments(userId) {
+            const { data: payments, error } = await supabase
+                .from('payment_requests')
+                .select('id, type, amount, status, created_at')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('payments-container');
+
+            if (error || !payments || payments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No transactions yet.</p>
+                        <p style="font-size: 0.85rem;">Your recharges and withdrawals will appear here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            payments.forEach(payment => {
+                const date = new Date(payment.created_at);
+                const formattedDate = date.toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }) + ' • ' + date.toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const isRecharge = payment.type === 'recharge';
+                const isUpgrade = payment.type === 'tier_upgrade';
+
+                const typeLabel = isRecharge ? '🔋 Recharge'
+                    : isUpgrade ? '⬆️ Tier Upgrade'
+                    : '💸 Withdrawal';
+
+                const amountClass = isRecharge || isUpgrade ? 'recharge' : 'withdrawal';
+                const amountPrefix = isRecharge || isUpgrade ? '+' : '-';
+
+                const statusClass = payment.status === 'approved' ? 'status-approved'
+                    : payment.status === 'failed' ? 'status-failed'
+                    : 'status-pending';
+
+                const statusLabel = payment.status === 'approved' ? '✓ Approved'
+                    : payment.status === 'failed' ? '✗ Failed'
+                    : '⏳ Pending';
+
+                const card = document.createElement('div');
+                card.className = 'payment-card';
+                card.innerHTML = `
+                    <div class="payment-card-left">
+                        <div class="payment-type">${typeLabel}</div>
+                        <div class="payment-date">${formattedDate}</div>
+                    </div>
+                    <div class="payment-card-right">
+                        <div class="payment-amount ${amountClass}">
+                            ${amountPrefix} UGX ${(payment.amount || 0).toLocaleString()}
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        loadPage();
+    </script>
+</body>
+</html>

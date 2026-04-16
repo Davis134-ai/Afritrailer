@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .profile-level {
+            background: var(--primary-orange);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .wallet-section {
+            margin: 30px 0;
+        }
+        
+        .income-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 2px solid var(--light-orange);
+            border-radius: 50px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--light-orange);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .referral-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .referral-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        
+        .wallet-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            
+            <div class="profile-name" id="user-name">Loading...</div>
+            <div class="profile-level" id="user-level">Level A1 Member</div>
+            
+            <p style="color: var(--text-light); max-width: 600px; margin: 0 auto;">
+                <i class="fas fa-phone"></i> <span id="user-phone-top">...</span>
+                <span style="margin: 0 10px;">•</span>
+                <i class="fas fa-calendar"></i> <span id="user-joined">...</span>
+            </p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="payments.html" class="action-btn">
+                <i class="fas fa-edit"></i> Manage Payments
+            </a>
+            <a href="#" class="action-btn" onclick="alert('Settings coming soon!')">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <a href="support.html" class="btn">Support</a>
+        </div>
+
+        <!-- Wallet Section -->
+        <div class="wallet-section">
+            <div class="wallet-card" style="background: linear-gradient(135deg, var(--primary-orange), var(--light-orange)); color: white; padding: 25px; border-radius: var(--radius); text-align: center; margin-bottom: 25px; box-shadow: var(--shadow);">
+                <div style="opacity: 0.9; font-size: 1.1rem;">Total Balance</div>
+                <div style="font-size: 3rem; font-weight: bold; margin: 15px 0;" id="total-balance">UGX 0</div>
+                <div class="wallet-actions">
+                    <a href="recharge.html" class="btn">
+                        <i class="fas fa-plus"></i> Recharge
+                    </a>
+                    <a href="withdraw.html" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Withdraw
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Statistics -->
+        <h2 style="text-align: center; margin: 40px 0 20px 0; color: var(--text-dark);">Income Statistics</h2>
+        
+        <div class="income-stats">
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">Yesterday's Income</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="yesterday-income">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-video"></i> <span id="yesterday-videos">0</span> videos watched
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">Today's Income</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="today-income">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-video"></i> <span id="today-videos">0</span> videos watched
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">This Week's Income</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="week-income">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-calendar-week"></i> Current week
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">This Month's Income</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="month-income">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-calendar-alt"></i> <span id="current-month">...</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">Total Income</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="total-income">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-chart-line"></i> All time
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <div style="color: var(--text-light); font-size: 0.9rem;">Referral Commission</div>
+                <div style="font-size: 1.8rem; font-weight: bold; color: var(--primary-orange); margin: 10px 0;" id="referral-commission">UGX 0</div>
+                <div style="font-size: 0.9rem; color: var(--text-light);">
+                    <i class="fas fa-user-friends"></i> From <span id="referral-count">0</span> referrals
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral Section -->
+        <div class="referral-section">
+            <h2 style="color: white; margin-bottom: 15px;">
+                <i class="fas fa-user-friends"></i> Referral Program
+            </h2>
+            <p>Invite friends and earn 10% commission on their first investment!</p>
+            
+            <div class="referral-code" id="user-referral-code">
+                AFRITRAILER-XXXXXX
+            </div>
+            
+            <button class="btn" style="background: white; color: #667eea;" onclick="copyReferralCode()">
+                <i class="fas fa-copy"></i> Copy Referral Link
+            </button>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.9;">
+                <i class="fas fa-info-circle"></i> Share your code with friends to start earning
+            </div>
+        </div>
+
+                <a href="referrals.html" style="
+                    display: block;
+                    background: linear-gradient(135deg, #11998e, #38ef7d);
+                    color: white;
+                    text-align: center;
+                    padding: 15px;
+                    border-radius: 12px;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    text-decoration: none;
+                    margin-bottom: 20px;
+                    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.35);
+                    letter-spacing: 0.5px;
+        ">
+            <i class="fas fa-user-friends"></i> View My Referrals
+        </a>
+
+        <!-- Account Information -->
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">Account Information</h2>
+            
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <h4><i class="fas fa-phone"></i> Phone Number</h4>
+                    <p id="user-phone">...</p>
+                </div>
+                
+                <div>
+                    <h4><i class="fas fa-id-card"></i> Account Status</h4>
+                    <p><span style="color: #4CAF50; font-weight: bold;">Active</span> • Verified User</p>
+                </div>
+                
+                <div>
+                    <h4><i class="fas fa-trophy"></i> Membership Level</h4>
+                    <p><span style="color: var(--primary-orange); font-weight: bold;" id="user-tier-bottom">...</span></p>
+                </div>
+                
+                <div>
+                    <h4><i class="fas fa-shield-alt"></i> Security</h4>
+                    <p>Last login: Today, 10:30 AM</p>
+                </div>
+            </div>
+            <div>
+                <h3>Don't have cash? You can still join</h3>
+                <button style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)" class="btn" onclick="window.location.href='https://signal.me/#eu/X_g_n9iKhd9o2K9Uw-Ttir8S04RyW40GarqcuRt51ysF2I0qSmBPLJ-AI45zYXQb'">
+                        <i class="fas fa-arrow-right"></i> Check Eligibilty
+                    </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="invest.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Invest</span>
+        </a>
+        <a href="task.html" class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>Task</span>
+        </a>
+        <a href="level.html" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>Level</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { supabase } from './supabase.js';
+        import { getCurrentUser } from './auth.js';
+
+        function fmt(amount) {
+            return 'UGX ' + (amount || 0).toLocaleString();
+        }
+
+        function getDateRange() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+            return { today, yesterday, weekStart, monthStart };
+        }
+
+        async function loadProfile() {
+            const { data: { user }, error: userError } = await getCurrentUser();
+            if (userError || !user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load profile
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('phone, tier, balance, total_earned, referral_code, created_at')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                const joinDate = new Date(profile.created_at);
+                const monthName = joinDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+                document.getElementById('user-name').textContent = profile.phone;
+                document.getElementById('user-phone-top').textContent = profile.phone;
+                document.getElementById('user-phone').textContent = profile.phone;
+                document.getElementById('user-level').textContent = `Level ${profile.tier} Member`;
+                document.getElementById('user-tier-bottom').textContent = profile.tier;
+                document.getElementById('user-joined').textContent = 'Joined ' + monthName;
+                document.getElementById('total-balance').textContent = fmt(profile.balance);
+                document.getElementById('total-income').textContent = fmt(profile.total_earned);
+                document.getElementById('user-referral-code').textContent = profile.referral_code || 'AFRITRAILER-XXXXXX';
+                document.getElementById('current-month').textContent = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+            }
+
+            // Load video watch earnings
+            const { data: watches } = await supabase
+                .from('user_videos')
+                .select('reward_earned, watched_at')
+                .eq('user_id', user.id);
+
+            if (watches) {
+                const { today, yesterday, weekStart, monthStart } = getDateRange();
+
+                let todayEarned = 0, todayCount = 0;
+                let yesterdayEarned = 0, yesterdayCount = 0;
+                let weekEarned = 0;
+                let monthEarned = 0;
+
+                watches.forEach(w => {
+                    const watchDate = new Date(w.watched_at);
+                    const watchDay = new Date(watchDate.getFullYear(), watchDate.getMonth(), watchDate.getDate());
+
+                    if (watchDay.getTime() === today.getTime()) {
+                        todayEarned += w.reward_earned;
+                        todayCount++;
+                    }
+                    if (watchDay.getTime() === yesterday.getTime()) {
+                        yesterdayEarned += w.reward_earned;
+                        yesterdayCount++;
+                    }
+                    if (watchDate >= weekStart) weekEarned += w.reward_earned;
+                    if (watchDate >= monthStart) monthEarned += w.reward_earned;
+                });
+
+                document.getElementById('today-income').textContent = fmt(todayEarned);
+                document.getElementById('today-videos').textContent = todayCount;
+                document.getElementById('yesterday-income').textContent = fmt(yesterdayEarned);
+                document.getElementById('yesterday-videos').textContent = yesterdayCount;
+                document.getElementById('week-income').textContent = fmt(weekEarned);
+                document.getElementById('month-income').textContent = fmt(monthEarned);
+            }
+
+            // Load referral commission and count
+            const { data: referrals } = await supabase
+                .from('referrals')
+                .select('commission_earned')
+                .eq('referrer_id', user.id);
+
+            if (referrals) {
+                const totalCommission = referrals.reduce((sum, r) => sum + r.commission_earned, 0);
+                document.getElementById('referral-commission').textContent = fmt(totalCommission);
+                document.getElementById('referral-count').textContent = referrals.length;
+            }
+        }
+
+        function copyReferralCode() {
+            const tier = document.getElementById('user-tier-bottom').textContent.trim();
+            if (!['A1', 'A2', 'A3', 'A4'].includes(tier)) {
+                alert('You need to be on tier A1 or above to share referral links. Upgrade your tier to unlock this feature.');
+                return;
+            }
+            const referralCode = document.getElementById('user-referral-code').textContent;
+            const link = window.location.origin + '/register.html?ref=' + referralCode;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Referral link copied to clipboard!');
+            });
+        }
+
+        window.copyReferralCode = copyReferralCode;
+        loadProfile();
+    </script>
+</body>
+</html>

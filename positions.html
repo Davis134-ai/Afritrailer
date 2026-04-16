@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Referral Positions</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .positions-header {
+            background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .positions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .position-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            border-top: 4px solid var(--primary-orange);
+        }
+        
+        .position-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .position-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-orange);
+            margin-bottom: 10px;
+        }
+        
+        .position-requirement {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        
+        .position-salary {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+        
+        .benefits-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #0d47a1;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 5px 5px 0 0;
+        }
+        
+        .disclaimer {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin: 40px 0;
+            color: #856404;
+        }
+        
+        .benefits-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .benefits-list span {
+            background: var(--light-orange);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .benefits-list i {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="positions-header">
+            <h1><i class="fas fa-briefcase"></i> Referral Positions</h1>
+            <p>Climb the ladder by referring successful users</p>
+        </div>
+
+        <div class="positions-grid">
+            <!-- Local Manager -->
+            <div class="position-card">
+                <div class="position-title">Local Manager</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 10 referrals
+                </div>
+                <div class="position-salary">UGX 80,000 / month</div>
+                <div><i class="fas fa-check-circle" style="color:#4CAF50;"></i> Monthly salary</div>
+            </div>
+
+            <!-- Local Supervisor -->
+            <div class="position-card">
+                <div class="position-title">Local Supervisor</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 25 referrals
+                </div>
+                <div class="position-salary">UGX 200,000 / month + benefits</div>
+                <div class="benefits-tag">Benefits included</div>
+            </div>
+
+            <!-- City Manager -->
+            <div class="position-card">
+                <div class="position-title">City Manager</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 50 referrals, with at least 10 of A3 and above
+                </div>
+                <div class="position-salary">UGX 650,000 / month + benefits</div>
+                <div class="benefits-tag">Benefits included</div>
+            </div>
+
+            <!-- City Supervisor -->
+            <div class="position-card">
+                <div class="position-title">City Supervisor</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 120 referrals, with at least 40 of A3 and above
+                </div>
+                <div class="position-salary">UGX 1,500,000 / month + benefits</div>
+                <div class="benefits-tag">Benefits included</div>
+            </div>
+
+            <!-- Regional Manager -->
+            <div class="position-card">
+                <div class="position-title">Regional Manager</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 180 referrals, with at least 65 of A3 and above
+                </div>
+                <div class="position-salary">UGX 3,500,000 / month + benefits</div>
+                <div class="benefits-tag">Benefits included</div>
+            </div>
+
+            <!-- Regional Supervisor -->
+            <div class="position-card">
+                <div class="position-title">Regional Supervisor</div>
+                <div class="position-requirement">
+                    <i class="fas fa-users"></i> <strong>Requirement:</strong> 250 referrals, with at least 80 of A3 and above
+                </div>
+                <div class="position-salary">UGX 5,500,000 / month + benefits</div>
+                <div class="benefits-tag">Benefits included</div>
+            </div>
+        </div>
+
+        <!-- Benefits overview -->
+        <div class="card">
+            <h3><i class="fas fa-gift"></i> Benefits for Supervisors and Above</h3>
+            <div class="benefits-list">
+                <span><i class="fas fa-building"></i> Dedicated office</span>
+                <span><i class="fas fa-car"></i> A car</span>
+                <span><i class="fas fa-laptop"></i> Work laptop</span>
+                <span><i class="fas fa-heartbeat"></i> Health insurance</span>
+                <span><i class="fas fa-plane"></i> International travels</span>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Disclaimer:</strong> Referrals must be successful to claim positions. A successful referral is a user who has upgraded to any paid tier (A1–A4) and remains active. All benefits are subject to company policies and may be adjusted.
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="invest.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Invest</span>
+        </a>
+        <a href="task.html" class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>Task</span>
+        </a>
+        <a href="level.html" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>Level</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

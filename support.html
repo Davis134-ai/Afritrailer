@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriTrailer - Support</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="container">
+  <h2>Support</h2>
+  <div class="card-grid">
+    <div class="card">
+      <i class="fas fa-comment"></i>
+      <h3>Chat with personal account manager</h3>
+      <a href="https://signal.me/#eu/X_g_n9iKhd9o2K9Uw-Ttir8S04RyW40GarqcuRt51ysF2I0qSmBPLJ-AI45zYXQb" target="_blank" class="btn">Signal</a>
+    </div>
+    <div class="card">
+      <i class="fab fa-whatsapp"></i>
+      <h3>Chat with agent via WhatsApp</h3>
+      <a href="https://wa.me/256740590134" target="_blank" class="btn">WhatsApp</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
